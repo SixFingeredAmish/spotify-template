@@ -1,47 +1,136 @@
 <!DOCTYPE html>
-<html ng-app="app">
-<head>
-	<meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>OneList.fm</title>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<script src="https://code.jquery.com/jquery.js"></script>
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css" rel="stylesheet" type="text/css" />
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.js"></script>
-	<link href="main.css" type="text/css" rel="stylesheet"/>
+		<title>OneList.fm – Your Music, Everywhere</title>
 
-	<script>
-    window.onload = function () {
-      var hash = window.location.hash;
-      if (window.location.search.substring(1).indexOf("error") !== -1) {
-        // login failure
-        window.close();
-      } else if (hash) {
-        // login success
-        var token = window.location.hash.split('&')[0].split('=')[1];
-        localStorage.setItem('spotify-token', token);
-				Spotify.setAuthToken(token);
-      }
-    }
-  </script>
-</head>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
-<body ng-controller="MainController">
-	<div>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
 
-		<button ng-click="login()">Login with Spotify</button>
-	  <input type="text" ng-model="searchartist" ng-change="searchArtist()" placeholder="Search for an artist">
+		<!-- Firebase + angularfire -->
+		<script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+		<script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.js"></script>
 
-		<button ng-click="createPlaylist()">Create Playlist</button>
+		<script src="https://code.jquery.com/jquery.min.js"></script>
 
+		<link href="main.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="main.js"></script>
+	</head>
 
-	</div>
+	<body ng-app="myApp" ng-controller="MainController">
 
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.js"></script>
-	<script src="angular-spotify.js"></script>
-	<script src="main.js"></script>
+		<!-- Header with logout button -->
+		<header>
+			<div class="header log-out">
+				<p id="pageName">OneList.fm
+					<span id="logout" ng-show="userId">{{users[userId].handle}}
+						<button ng-click="logOut()" class="btn btn-warning">log out</button>
+					</span>
+				</p>
+			</div>
+		</header>
 
-</body>
+		<div class="container" id="login">
+			<!-- if no userid, onboard user -->
+			<form name="myForm" novalidate ng-show="!userId">
+				<div class="form-group">
+					<label>Username:</label>
+					<input name="username" class="form-control" ng-minlength="6" ng-model="username">
 
+					<!-- error for short username -->
+					<p ng-show="myForm.username.$error.minlength" class="help-block">Sorry, username must be longer than 6 characters</p>
+				</div>
+
+				<!-- hillary's emails -->
+				<div class="form-group">
+					<label>Email:</label>
+					<input name="email" type="email" class="form-control" ng-model="email"></input>
+
+					<!-- error for bad email -->
+					<p ng-show="myForm.email.$error.email" class="help-block">There's something wrong with the email you provided!</p>
+				</div>
+
+				<!-- Password -->
+				<div class="form-group">
+					<label>Password:</label>
+					<input  name="password" type="password" class="form-control" ng-model="password" required></input>
+				</div>
+
+				<!-- Submit buttons: should only be active if certain inputs are valid -->
+				<div class="form-group">
+					<button ng-click="signUp()" ng-disabled="myForm.$invalid" type="submit" class="btn btn-primary">sign up</button>
+
+					<button ng-click="signIn()" ng-disabled="myForm.email.$invalid || myForm.password.$invalid" type="submit" class="btn btn-primary">sign in</button>
+				</div>
+			</form>
+
+			<!-- Show tweets (if userId is defined) -->
+			<div ng-show="userId">
+
+				<!-- Element for writing tweets -->
+				<div class="col-md-3">
+
+						<!-- Form for creating new playlists -->
+						<div id="createNew">
+							<form name="newList" id="newList">
+							<h3>Create Your OneList</h3>
+								<div class="form-group">
+									<input  ng-model="listName" name="listName" class="form-control" required></input>
+								</div>
+
+								<div>
+									<!-- Execute the create function when clicked -->
+									<button ng-click="create()" ng-disabled="newList.$invalid" type="submit" class="btn btn-primary">Start Listening</button>
+								</div>
+
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<!-- Show everyone's lists -->
+				<div class="col-md-9" ng-show="userId">
+					<h1>Your OneList</h1>
+					<div ng-repeat="list in lists" class="onelist">
+						<div>
+
+							<div ng-show="listClicked">
+								<div class="playlist">
+
+									<ul>
+										<li ng-repeat="song in songs" class="" title="{{song.name}}" ng-click="play(song.preview_url)" data-toggle="tooltip" title="Click to Sample" ng-click="play(song.preview_url)">{{song.artists[0].name + '–' + song.name}}</li>
+									</ul>
+
+								</div>
+
+								<form name="songForm">
+									<div class="form-group">
+										<input class="form-control" name="search" placeholder="add song" ng-model="track"></input>
+									</div>
+
+									<div class="form-group">
+										<button class="btn btn-primary" ng-disabled="searchForm.search.$invalid" ng-click="search()" type="submit">+</button>
+									</div>
+
+								</form>
+
+								<div class="container">
+									<ul>
+										<li ng-repeat="track in tracks" ng-click="play(track.preview_url)" title="{{track.name}}">{{track.artists[0].name + "–" + track.name}}</li>
+									</ul>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</body>
 </html>
