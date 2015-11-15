@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Inconsolata:400,700);
+@import url(https://fonts.googleapis.com/css?family=Inconsolata:400);
 
 body {
   font-family: 'Inconsolata', Input Mono, Menlo, monospace;
@@ -8,5 +8,10 @@ body {
 }
 
 h1 {
-  font-weight: 700;
+  font-size: 1.5em;
+}
+
+.results {
+  list-style: none;
+  text-indent: none;
 }

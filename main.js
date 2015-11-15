@@ -2,8 +2,8 @@ var data;
 //utlize spotify api search
 var baseUrl = 'https://api.spotify.com/v1/search?type=track&query=';
 
-var myApp = angular.module('myApp', ['firebase']);
-myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArray, $firebaseObject, $http){
+var myApp = angular.module('myApp', ['firebase', 'spotify']);
+myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArray, $firebaseObject, $http, Spotify){
 
   var ref = new Firebase("https://onelistfm.firebaseio.com");
 
@@ -13,23 +13,23 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
   $scope.accounts = $firebaseObject(accountsRef);
   $scope.lists = $firebaseArray(listsRef);
 
-  $scope.listClicked = false;
-
   $scope.clicked = function(songList) {
     $scope.songs = [];
     $scope.track = "";
     $scope.tracks = "";
 
-    if (songList.songs != 0) {
-      var listUrl = new Firebase("https://onelistfm.firebaseio.com/songList/" + songList.$id + "/" + songList.songs);
-      var playlist = $firebaseArray(baz);
+    if (songList.songs > 0) {
+      var listUrl = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id + "/" + songList.songs);
+
+      var playlist = $firebaseArray(listUrl);
       $scope.songs = playlist;
     }
   }
-  $scope.authObj = $firebaseAuth(ref);
 
   //mike's login stuff
   // Test if already logged in
+  $scope.authObj = $firebaseAuth(ref);
+
   var authData = $scope.authObj.$getAuth();
   if (authData) {
     $scope.userId = authData.uid;
@@ -44,6 +44,7 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
     })
 
     // Once the user is created, call the logIn function
+
     .then($scope.logIn)
 
     // Once logged in, set and save the user data
@@ -52,6 +53,18 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
       $scope.accounts[authData.uid] ={
         username:$scope.username
       }
+      //create playlist, so every acc has 1 list
+        if ($scope.lists.userId != userId) {
+          $scope.lists.$add({
+            title: "OneList",
+            userId: $scope.userId,
+            songs: 0,
+            time: Firebase.ServerValue.TIMESTAMP
+        })
+        $scope.listName = "";
+        $scope.lists.$save();
+      }
+
       $scope.accounts.$save()
     })
 
@@ -85,27 +98,34 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
     $scope.password = "";
   }
 
-  //create new playlist
-  $scope.create = function() {
-    $scope.lists.$add({
-      title: $scope.listName,
-      userId: $scope.userId,
-      songs: 0,
-      time: Firebase.ServerValue.TIMESTAMP
-    }).then(function() {
-      $scope.listName = "";
-      $scope.lists.$save();
-    })
-  }
-
   //spotify search
   $scope.audioObject = {};
   $scope.search = function() {
-    $http.get(baseUrl + $scope.track).success(function(response){
+
+    Spotify.search($scope.track, 'track').then(function (response) {
       data = $scope.tracks = response.tracks.items;
+
       console.log($scope.track);
       console.log(data);
     })
+  };
+
+  //add song to queue
+  $scope.addSong = function(songList, track) {
+    if (songList.songs == 0) { //if list empty
+      var listUrl2 = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id);
+      var tempList = listUrl2.push([]);
+      songList.songs = tempList.key();
+      $scope.lists.$save(songList);
+    }
+
+    $scope.songs = [];
+    var listUrl3 = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id + "/" + songList.songs);
+    var tempList = listUrl3.push(angular.copy(track));
+    var playlist = $firebaseArray(listUrl3);
+    $scope.songs = playlist;
+
+    console.log(playlist);
   }
 
   //play song preview
@@ -114,8 +134,7 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
       $scope.audioObject.pause();
       $scope.currentSong = false;
       return
-    }
-    else {
+    } else {
       if($scope.audioObject.pause != undefined) $scope.audioObject.pause()
       $scope.audioObject = new Audio(song);
       $scope.audioObject.play();
@@ -123,20 +142,4 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
     }
   }
 
-  //add song to queue
-  $scope.addSong = function(songList, track) {
-    if (songList.songs == 0) { //if list empty
-      var listUrl = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id);
-      var tempList = listUrl.push([]);
-      songList.songs = tempList.key();
-      $scope.lists.$save(songList);
-    }
-    $scope.songs = [];
-    var listUrl = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id + "/" + songList.songs);
-    var tempList = listUrl.push(angular.copy(track));
-    var playlist = $firebaseArray(tempList);
-    $scope.songs = playlist;
-
-    console.log(playlist);
-  }
 })

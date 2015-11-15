@@ -11,8 +11,8 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+		<script src="angular-spotify.min.js"></script>
 
-		<!-- Firebase + angularfire -->
 		<script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
 		<script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.js"></script>
 
@@ -24,11 +24,10 @@
 
 	<body ng-app="myApp" ng-controller="MainController">
 
-		<!-- Header with logout button -->
 		<header>
-			<div class="header log-out">
+			<div class="header">
 				<p id="pageName">OneList.fm
-					<span id="logout" ng-show="userId">{{users[userId].handle}}
+					<span id="logout" ng-show="userId">
 						<button ng-click="logOut()" class="btn btn-warning">log out</button>
 					</span>
 				</p>
@@ -61,7 +60,6 @@
 					<input  name="password" type="password" class="form-control" ng-model="password" required></input>
 				</div>
 
-				<!-- Submit buttons: should only be active if certain inputs are valid -->
 				<div class="form-group">
 					<button ng-click="signUp()" ng-disabled="myForm.$invalid" type="submit" class="btn btn-primary">sign up</button>
 
@@ -69,59 +67,34 @@
 				</div>
 			</form>
 
-			<!-- Show tweets (if userId is defined) -->
-			<div ng-show="userId">
-
-				<!-- Element for writing tweets -->
-				<div class="col-md-3">
-
-						<!-- Form for creating new playlists -->
-						<div id="createNew">
-							<form name="newList" id="newList">
-							<h3>Create Your OneList</h3>
-								<div class="form-group">
-									<input  ng-model="listName" name="listName" class="form-control" required></input>
-								</div>
-
-								<div>
-									<!-- Execute the create function when clicked -->
-									<button ng-click="create()" ng-disabled="newList.$invalid" type="submit" class="btn btn-primary">Start Listening</button>
-								</div>
-
-							</form>
-						</div>
-					</div>
-				</div>
-
-				<!-- Show everyone's lists -->
+				<!-- user's onelist -->
 				<div class="col-md-9" ng-show="userId">
 					<h1>Your OneList</h1>
 					<div ng-repeat="list in lists" class="onelist">
 						<div>
 
-							<div ng-show="listClicked">
-								<div class="playlist">
-
+							<div ng-show="clicked">
+								<div>
 									<ul>
-										<li ng-repeat="song in songs" class="" title="{{song.name}}" ng-click="play(song.preview_url)" data-toggle="tooltip" title="Click to Sample" ng-click="play(song.preview_url)">{{song.artists[0].name + '–' + song.name}}</li>
+										<li ng-repeat="song in songs" title="{{song.name}}"  data-toggle="tooltip">{{song.artists[0].name + ' – ' + song.name}}</li>
 									</ul>
-
 								</div>
-
+								<!-- search -->
 								<form name="songForm">
 									<div class="form-group">
-										<input class="form-control" name="search" placeholder="add song" ng-model="track"></input>
+										<input class="form-control" name="search" placeholder="add song. for best results, include both song name and artist name." ng-model="$parent.track"></input>
 									</div>
 
 									<div class="form-group">
-										<button class="btn btn-primary" ng-disabled="searchForm.search.$invalid" ng-click="search()" type="submit">+</button>
+										<button class="btn btn-primary" ng-disabled="searchForm.search.$invalid" ng-click="search()" type="submit"><i class="fa fa-search"></i></button>
 									</div>
 
 								</form>
 
 								<div class="container">
 									<ul>
-										<li ng-repeat="track in tracks" ng-click="play(track.preview_url)" title="{{track.name}}">{{track.artists[0].name + "–" + track.name}}</li>
+										<li class="results" ng-repeat="track in tracks" title="{{track.name}}"><i class="fa fa-plus-square" ng-click="addSong($parent.songList, track)"></i>
+											<span class="artist">{{track.artists[0].name}}</span> – <span class="song">{{track.name}}</span></li>
 									</ul>
 
 								</div>

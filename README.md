@@ -13,11 +13,11 @@ This version only supports text input. In the future, having one list everywhere
 apple.com/music nope
 
 ##Did you receive help from any other sources (classmates, etc.)? If so, please list who.
-Walter Ceder (webapp genius), StackOverflow (has every error possible), and Susan (somehow loves JS more than Java). Mike Freeman's Firebase Twitter demo code.
+Walter Ceder (webapp genius), StackOverflow (has every error possible), and Stella Ding, Susan, and Mike Freeman's Firebase Twitter demo code.
 
 ##Approximately how many hours did it take you to complete this challenge?
 
-20 hours. However, 10 were spent writing code that I had to trash, like trying to get angular-spotify to work and wrestling with authentication and OAuth.
+18 hours. However, 6 were spent writing code that I had to trash, like trying to get angular-spotify to work and wrestling with authentication and OAuth.
 
 ##Did you encounter any problems in this challenge we should warn students about in the future? How can we make the challenge better?
 
