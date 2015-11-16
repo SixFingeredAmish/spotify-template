@@ -10,7 +10,9 @@ The design is inspired by tiling window managers like [i3 and awesomewm](https:/
 
 This version only supports manual input by search and adding. In the future, having one list everywhere will be painless. The user could select a file from Dropbox, Simplenote, or Evernote, so that their favorite music are truly everywhere and they no longer need to visit the site to update their music.
 
-*Also, to avoid the 30 second sample, OneList uses the widget player. This means that the user needs to be logged in to Spotify on their desktop client.*
+**Also, to bypass the 30 second sample, OneList uses the widget player. This means that the user needs to be logged in to Spotify on their desktop client.**
+
+**AdBlock and other privacy extensions need to be disabled to ensure that all scripts load**
 
 ##What is the URL of this project on your student web-server?
 
