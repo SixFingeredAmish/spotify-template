@@ -28,7 +28,7 @@
 			<div class="header">
 				<p id="pageName">OneList.fm
 					<span id="logout" ng-show="userId">
-						<button ng-click="logOut()" class="btn btn-warning">log out</button>
+						<button ng-click="logOut()">log out</button>
 					</span>
 				</p>
 			</div>
@@ -68,11 +68,9 @@
 			</form>
 
 				<!-- user's onelist -->
-				<div class="col-md-9" ng-show="userId">
+				<div class="col-md-6" ng-show="userId">
 					<h1>Your OneList</h1>
 					<div ng-repeat="list in lists" class="onelist">
-						<div>
-
 							<div ng-show="clicked">
 								<div>
 									<ul>
@@ -93,15 +91,21 @@
 
 								<div class="container">
 									<ul>
-										<li class="results" ng-repeat="track in tracks" title="{{track.name}}"><i class="fa fa-plus-square" ng-click="addSong($parent.songList, track)"></i>
+										<li class="results" ng-repeat="track in tracks" title="{{track.name}}"><i class="fa fa-plus-square" ng-click="addSong($scope.songId, track)"></i>
 											<span class="artist">{{track.artists[0].name}}</span> – <span class="song">{{track.name}}</span></li>
 									</ul>
 
 								</div>
+
 							</div>
-						</div>
+
 					</div>
 				</div>
+
+				<div class="col-md-6" id="player">
+						<iframe src="{{songId}}" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
+				</div>
+
 			</div>
 		</div>
 

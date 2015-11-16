@@ -3,6 +3,11 @@ var data;
 var baseUrl = 'https://api.spotify.com/v1/search?type=track&query=';
 
 var myApp = angular.module('myApp', ['firebase', 'spotify']);
+
+angular.module("myApp").config(function($sceProvider) {
+  $sceProvider.enabled(false);
+});
+
 myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArray, $firebaseObject, $http, Spotify){
 
   var ref = new Firebase("https://onelistfm.firebaseio.com");
@@ -12,6 +17,8 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
 
   $scope.accounts = $firebaseObject(accountsRef);
   $scope.lists = $firebaseArray(listsRef);
+
+  $scope.songId = "https://embed.spotify.com/?uri=spotify:trackset:OneList:0FutrWIUM5Mg3434asiwkp";
 
   $scope.clicked = function(songList) {
     $scope.songs = [];
@@ -111,21 +118,11 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
   };
 
   //add song to queue
-  $scope.addSong = function(songList, track) {
-    if (songList.songs == 0) { //if list empty
-      var listUrl2 = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id);
-      var tempList = listUrl2.push([]);
-      songList.songs = tempList.key();
-      $scope.lists.$save(songList);
-    }
+  $scope.addSong = function(songId, track) {
+    $scope.songId = $scope.songId + "," + track.id;
 
-    $scope.songs = [];
-    var listUrl3 = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id + "/" + songList.songs);
-    var tempList = listUrl3.push(angular.copy(track));
-    var playlist = $firebaseArray(listUrl3);
-    $scope.songs = playlist;
-
-    console.log(playlist);
+    $scope.lists.$add(songId);
+    $scope.lists.$save(songId);
   }
 
   //play song preview
