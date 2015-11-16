@@ -18,19 +18,12 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
   $scope.accounts = $firebaseObject(accountsRef);
   $scope.lists = $firebaseArray(listsRef);
 
-  $scope.songId = "https://embed.spotify.com/?uri=spotify:trackset:OneList:0FutrWIUM5Mg3434asiwkp";
+
 
   $scope.clicked = function(songList) {
     $scope.songs = [];
     $scope.track = "";
     $scope.tracks = "";
-
-    if (songList.songs > 0) {
-      var listUrl = new Firebase("https://onelistfm.firebaseio.com/lists/" + songList.$id + "/" + songList.songs);
-
-      var playlist = $firebaseArray(listUrl);
-      $scope.songs = playlist;
-    }
   }
 
   //mike's login stuff
@@ -61,16 +54,17 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
         username:$scope.username
       }
       //create playlist, so every acc has 1 list
-        if ($scope.lists.userId != userId) {
+
           $scope.lists.$add({
             title: "OneList",
             userId: $scope.userId,
             songs: 0,
-            time: Firebase.ServerValue.TIMESTAMP
+            time: Firebase.ServerValue.TIMESTAMP,
+            songId: "https://embed.spotify.com/?uri=spotify:trackset:OneList:0FutrWIUM5Mg3434asiwkp",
         })
         $scope.listName = "";
         $scope.lists.$save();
-      }
+
 
       $scope.accounts.$save()
     })
@@ -80,6 +74,8 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
       console.error("Error: ", error);
     });
   }
+
+  $scope.songId = "https://embed.spotify.com/?uri=spotify:trackset:OneList:0FutrWIUM5Mg3434asiwkp";
 
   // SignIn function
   $scope.signIn = function() {
@@ -106,9 +102,8 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
   }
 
   //spotify search
-  $scope.audioObject = {};
+  // $scope.audioObject = {};
   $scope.search = function() {
-
     Spotify.search($scope.track, 'track').then(function (response) {
       data = $scope.tracks = response.tracks.items;
 
@@ -121,22 +116,7 @@ myApp.controller('MainController', function($scope, $firebaseAuth, $firebaseArra
   $scope.addSong = function(songId, track) {
     $scope.songId = $scope.songId + "," + track.id;
 
-    $scope.lists.$add(songId);
     $scope.lists.$save(songId);
-  }
-
-  //play song preview
-  $scope.play = function(song) {
-    if($scope.currentSong == song) {
-      $scope.audioObject.pause();
-      $scope.currentSong = false;
-      return
-    } else {
-      if($scope.audioObject.pause != undefined) $scope.audioObject.pause()
-      $scope.audioObject = new Audio(song);
-      $scope.audioObject.play();
-      $scope.currentSong = song;
-    }
   }
 
 })

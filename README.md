@@ -4,20 +4,24 @@
 
 OneList was created with the philosophy that anyone should be able to enjoy all their music everywhere, on every platform and service. The only way to achieve this is true the web that allows the user to play their music on any streaming service like Rdio and Spotify. Instead of having some of your favorite music saved in a Spotify playlist, some in an Rdio playlist, and others on YouTube, users have a single list which they can continue adding to as they venture on their music journey.
 
-OneList uses a text file containing a list of the user's favorite songs and artists and presents the user with a list of streaming platforms the user can choose to use. This way, a user doesn't have to settle with created a favorite list in Rdio and manually create another one in Spotify, of course also updating each list manually. OneList fixes that. Having a single list of your favorite music everywhere solves this problem.
+OneList creates a list of the user's favorite songs and artists and presents the user with a list of streaming platforms the user can choose to use. This way, a user doesn't have to settle with created a favorite list in Rdio and manually create another one in Spotify, of course also updating each list manually. OneList fixes that. Having a single list of your favorite music everywhere solves this problem.
 
-This version only supports text input. In the future, having one list everywhere will be painless. The user could select a file from Dropbox, Simplenote, or Evernote, so that their favorite music are truly everywhere and they no longer need to visit the site to update their music.
+The design is inspired by tiling window managers like [i3 and awesomewm](https://feednix-jarkore.rhcloud.com/wp-content/uploads/2014/06/2014-10-01-093917_1366x768_scrot.png) and also the appearance of the [Bloomberg Terminal](http://cdn.skilledup.com/wp-content/uploads/2013/02/Bloomberg-Screenshot-620x443.gif).
+
+This version only supports manual input by search and adding. In the future, having one list everywhere will be painless. The user could select a file from Dropbox, Simplenote, or Evernote, so that their favorite music are truly everywhere and they no longer need to visit the site to update their music.
+
+*Also, to avoid the 30 second sample, OneList uses the widget player. This means that the user needs to be logged in to Spotify on their desktop client.*
 
 ##What is the URL of this project on your student web-server?
 
-apple.com/music nope
+http://students.washington.edu/nirawitj/info343/spotify-template
 
 ##Did you receive help from any other sources (classmates, etc.)? If so, please list who.
 Walter Ceder (webapp genius), StackOverflow (has every error possible), and Stella Ding, Susan, and Mike Freeman's Firebase Twitter demo code.
 
 ##Approximately how many hours did it take you to complete this challenge?
 
-18 hours. However, 6 were spent writing code that I had to trash, like trying to get angular-spotify to work and wrestling with authentication and OAuth.
+24 hours. However, 6 were spent writing code that I had to trash, like trying to get most of angular-spotify to work and wrestling with authentication and OAuth.
 
 ##Did you encounter any problems in this challenge we should warn students about in the future? How can we make the challenge better?
 
